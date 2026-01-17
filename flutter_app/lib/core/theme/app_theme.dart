@@ -22,12 +22,11 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primary,
         secondary: secondary,
-        surface: lightCard,
-        background: lightBackground,
-        onBackground: Color(0xFF2D3748),
+        surface: lightBackground,
+        onSurface: Color(0xFF2D3748),
       ),
       textTheme: GoogleFonts.interTextTheme(),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -46,12 +45,11 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: primaryDark,
         secondary: secondary,
-        surface: darkCard,
-        background: darkBackground,
-        onBackground: Color(0xFFF1F5F9),
+        surface: darkBackground,
+        onSurface: Color(0xFFF1F5F9),
       ),
       textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(

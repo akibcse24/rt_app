@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../providers/task_provider.dart';
+import 'providers/task_provider.dart';
 import 'widgets/task_item.dart';
 
 class RoutineScreen extends ConsumerWidget {
