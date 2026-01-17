@@ -26,7 +26,7 @@ class TaskItem extends ConsumerWidget {
           style: TextStyle(
             decoration: task.isCompleted ? TextDecoration.lineThrough : null,
             color: task.isCompleted
-                ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
                 : Theme.of(context).colorScheme.onSurface,
           ),
         ),
