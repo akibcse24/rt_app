@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+:root {
+  /* =========================================
+     COSMIC GLASS THEME - LIGHT (Aerogel)
+     ========================================= */
+  --background: #f0f4f8;
+  /* Very soft blue-grey */
+  --foreground: #2d3748;
+  /* Deep slate */
+
+  --card: rgba(255, 255, 255, 0.65);
+  --card-foreground: #2d3748;
+
+  --primary: #8b5cf6;
+  /* Violet */
+  --primary-foreground: #ffffff;
+
+  --muted: rgba(241, 245, 249, 0.6);
+  --muted-foreground: #64748b;
+
+  --border: rgba(255, 255, 255, 0.6);
+  --accent: rgba(255, 255, 255, 0.8);
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Neumorphic Shadows - Light */
+  --neu-shadow-light: #ffffff;
+  --neu-shadow-dark: #d1d9e6;
+
+  /* Glass Effects */
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-highlight: rgba(255, 255, 255, 0.8);
+
+  --gradient-from: #8b5cf6;
+  --gradient-to: #ec4899;
+}
+
+.dark {
+  /* =========================================
+     COSMIC GLASS THEME - DARK (Deep Space)
+     ========================================= */
+  --background: #0f172a;
+  /* Slate 900 */
+  --foreground: #f1f5f9;
+
+  --card: rgba(30, 41, 59, 0.6);
+  --card-foreground: #f1f5f9;
+
+  --primary: #a78bfa;
+  --primary-foreground: #ffffff;
+
+  --muted: rgba(51, 65, 85, 0.6);
+  --muted-foreground: #94a3b8;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: rgba(51, 65, 85, 0.8);
+
+  --destructive: #f87171;
+  --destructive-foreground: #0f172a;
+
+  /* Neumorphic Shadows - Dark */
+  --neu-shadow-light: rgba(255, 255, 255, 0.05);
+  --neu-shadow-dark: rgba(0, 0, 0, 0.3);
+
+  /* Glass Effects */
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+
+  --gradient-from: #a78bfa;
+  --gradient-to: #f472b6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer utilities {
+  /* =========================================
+     PREMIUM GLASS UTILITIES
+     ========================================= */
+
+  /* The main glass effect for cards/containers */
+  .glass-premium {
+    background: var(--card);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.1),
+      inset 0 0 0 1px var(--glass-highlight);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  }
+
+  /* Stronger glass for headers/modals */
+  .glass-heavy {
+    background: rgba(var(--background), 0.7);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  /* =========================================
+     SOFT NEUMORPHISM 2.0
+     ========================================= */
+
+  /* Popping out (convex) */
+  .neu-convex {
+    background: var(--card);
+    box-shadow:
+      8px 8px 16px var(--neu-shadow-dark),
+      -8px -8px 16px var(--neu-shadow-light);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* Pushed in (concave/pressed) */
+  .neu-concave {
+    background: var(--card);
+    box-shadow:
+      inset 6px 6px 12px var(--neu-shadow-dark),
+      inset -6px -6px 12px var(--neu-shadow-light);
+    border: 1px solid transparent;
+  }
+
+  /* Icon Button wrapper */
+  .neu-icon-btn {
+    @apply flex items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95;
+    background: var(--card);
+    box-shadow:
+      8px 8px 16px var(--neu-shadow-dark),
+      -8px -8px 16px var(--neu-shadow-light);
+    border: 1px solid var(--glass-border);
+  }
+
+  .neu-icon-btn:active {
+    box-shadow:
+      inset 6px 6px 12px var(--neu-shadow-dark),
+      inset -6px -6px 12px var(--neu-shadow-light);
+    border: 1px solid transparent;
+  }
+
+  /* =========================================
+     ANIMATIONS & EFFECTS
+     ========================================= */
+
+  /* Gentle Floating Animation */
+  .float-animation {
+    animation: float-y 6s ease-in-out infinite;
+  }
+
+
+
+  /* Hide Scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(168, 85, 247, 0.2);
+  }
+}
+
+@keyframes float-y {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* =========================================
+   GLOBAL STYLES
+   ========================================= */
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  @apply antialiased transition-colors duration-500 min-h-screen selection:bg-primary/30;
+
+  /* Mesh Gradient Background */
+  background-image:
+    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}

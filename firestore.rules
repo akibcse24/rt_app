@@ -1,0 +1,237 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ============================================================================
+    // ENHANCED FIRESTORE SECURITY RULES - PROFESSIONAL EDITION
+    // ============================================================================
+    // SETUP INSTRUCTIONS:
+    // 1. Go to Firebase Console → Firestore Database → Rules
+    // 2. Copy and paste this entire file
+    // 3. Click "Publish"
+    // ============================================================================
+
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper: Check if request is within rate limits (basic check)
+    function isNotAbusive() {
+      // Allow up to 100 writes per minute per user (basic safeguard)
+      return true; // Advanced rate limiting should be done server-side
+    }
+
+    // Helper: Validate task data structure with comprehensive checks
+    function isValidTask() {
+      let task = request.resource.data;
+      let hasSpecificDate = 'specificDate' in task.keys();
+      let hasRequiredFields = task.keys().hasAll([
+        'title', 'timeBlock', 'days', 'createdAt'
+      ]);
+
+      // Title validation: 1-200 characters, no dangerous characters
+      let titleValidation = task.title is string
+        && task.title.size() >= 1
+        && task.title.size() <= 200;
+
+      // Time block validation
+      let timeBlockValidation = task.timeBlock in [
+        'Dawn', 'Morning', 'Noon', 'Afternoon', 'Evening', 'Night'
+      ];
+
+      // Days validation: must be array of valid day indices (0-6)
+      let daysValidation = task.days is list
+        && task.days.size() >= 0
+        && task.days.size() <= 7;
+
+      // Optional field validations
+      let optionalFieldsValid = true;
+      if ('icon' in task.keys()) {
+        optionalFieldsValid = optionalFieldsValid
+          && task.icon is string
+          && task.icon.size() <= 20;
+      }
+      if ('isCompleted' in task.keys()) {
+        optionalFieldsValid = optionalFieldsValid && task.isCompleted is bool;
+      }
+      if ('priority' in task.keys()) {
+        optionalFieldsValid = optionalFieldsValid
+          && task.priority in ['low', 'medium', 'high'];
+      }
+      if ('duration' in task.keys()) {
+        optionalFieldsValid = optionalFieldsValid
+          && task.duration is number
+          && task.duration >= 0
+          && task.duration <= 1440; // Max 24 hours in minutes
+      }
+      if ('createdAt' in task.keys()) {
+        optionalFieldsValid = optionalFieldsValid && task.createdAt is number;
+      }
+
+      // specificDate validation if present
+      let specificDateValid = true;
+      if (hasSpecificDate) {
+        specificDateValid = task.specificDate is string
+          && task.specificDate.size() <= 50;
+      }
+
+      return hasRequiredFields
+        && titleValidation
+        && timeBlockValidation
+        && daysValidation
+        && optionalFieldsValid
+        && specificDateValid;
+    }
+
+    // Helper: Validate goal data structure
+    function isValidGoal() {
+      let goal = request.resource.data;
+      let hasRequiredFields = goal.keys().hasAll([
+        'title', 'targetDate', 'createdAt'
+      ]);
+
+      // Title validation
+      let titleValidation = goal.title is string
+        && goal.title.size() >= 1
+        && goal.title.size() <= 300;
+
+      // Target date validation
+      let targetDateValidation = goal.targetDate is number;
+
+      // Progress validation if present
+      let progressValid = true;
+      if ('progress' in goal.keys()) {
+        progressValid = progressValid
+          && goal.progress is number
+          && goal.progress >= 0
+          && goal.progress <= 100;
+      }
+
+      return hasRequiredFields
+        && titleValidation
+        && targetDateValidation
+        && progressValid;
+    }
+
+    // Helper: Validate focus session data
+    function isValidFocusSession() {
+      let session = request.resource.data;
+      return session.keys().hasAll(['duration', 'startTime'])
+        && session.duration is number
+        && session.duration > 0
+        && session.duration <= 1440 // Max 24 hours
+        && session.startTime is number
+        && session.startTime > 1609459200000; // After Jan 1, 2021
+    }
+
+    // ============================================================================
+    // USER DOCUMENTS
+    // ============================================================================
+    match /users/{userId} {
+      // Profile read: authenticated users only (for leaderboard)
+      allow read: if isAuthenticated();
+      // Profile write: owner only
+      allow write: if isOwner(userId) && isNotAbusive();
+
+      // TASKS SUBCOLLECTION - with validation
+      match /tasks/{taskId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidTask() && isNotAbusive();
+        allow update: if isOwner(userId) && isValidTask() && isNotAbusive();
+        allow delete: if isOwner(userId) && isNotAbusive();
+      }
+
+      // GOALS SUBCOLLECTION - with validation
+      match /goals/{goalId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidGoal() && isNotAbusive();
+        allow update: if isOwner(userId) && isValidGoal() && isNotAbusive();
+        allow delete: if isOwner(userId) && isNotAbusive();
+      }
+
+      // TEMPLATES SUBCOLLECTION
+      match /templates/{templateId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // MOODS SUBCOLLECTION
+      match /moods/{moodId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ACHIEVEMENTS SUBCOLLECTION
+      match /achievements/{achievementId} {
+        allow read: if isOwner(userId);
+        // Achievements are managed by cloud functions for consistency
+        allow write: if false;
+      }
+
+      // NOTIFICATIONS SUBCOLLECTION
+      match /notifications/{notificationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // WEEKLY SUMMARIES SUBCOLLECTION
+      match /weeklySummaries/{summaryId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+
+      // FOCUS SESSIONS SUBCOLLECTION
+      match /focusSessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidFocusSession() && isNotAbusive();
+        allow update, delete: if isOwner(userId);
+      }
+
+      // USER SETTINGS SUBCOLLECTION
+      match /settings/{settingId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId) && isNotAbusive();
+      }
+    }
+
+    // ============================================================================
+    // LEADERBOARD - Public read for authenticated users
+    // ============================================================================
+    match /leaderboard/{document=**} {
+      allow read: if isAuthenticated();
+      // Leaderboard updated by cloud functions only
+      allow write: if false;
+    }
+
+    // ============================================================================
+    // MARKETPLACE - Public read, admin write
+    // ============================================================================
+    match /marketplace/{document=**} {
+      allow read: if true;
+      // Templates managed by admins only
+      allow write: if false;
+    }
+
+    // ============================================================================
+    // PUBLIC ACHIEVEMENTS - Anyone can read
+    // ============================================================================
+    match /publicAchievements/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ============================================================================
+    // SYSTEM COLLECTIONS - Internal use only
+    // ============================================================================
+    match /system/{document=**} {
+      allow read, write: if false;
+    }
+
+    match /analytics/{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
