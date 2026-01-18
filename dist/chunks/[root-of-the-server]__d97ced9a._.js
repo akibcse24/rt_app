@@ -1,3 +1,0 @@
-module.exports=[51615,(e,r,o)=>{r.exports=e.x("node:buffer",()=>require("node:buffer"))},37702,(e,r,o)=>{r.exports=e.x("worker_threads",()=>require("worker_threads"))},39802,(e,r,o)=>{if(!globalThis.DOMException)try{let{MessageChannel:r}=e.r(37702),o=new r().port1,t=new ArrayBuffer;o.postMessage(t,[t,t])}catch(e){"DOMException"===e.constructor.name&&(globalThis.DOMException=e.constructor)}r.exports=globalThis.DOMException},25897,e=>{e.v(r=>Promise.all(["server/chunks/[root-of-the-server]__4e7d4f90._.js","server/chunks/[root-of-the-server]__9990ab4a._.js"].map(r=>e.l(r))).then(()=>r(55057)))}];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__d97ced9a._.js.map
